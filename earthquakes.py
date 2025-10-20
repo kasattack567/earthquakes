@@ -5,6 +5,8 @@
 import json
 import requests
 
+print("hello world")
+
 def get_data():
     # With requests, we can ask the web service for the data.
     # Can you understand the parameters we are passing here?
