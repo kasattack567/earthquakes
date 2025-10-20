@@ -80,3 +80,10 @@ print(f"The strongest earthquake was at {max_location} with magnitude {max_magni
 
 print(type(data))
 print(data.keys())
+
+# Extract and print magnitudes and times
+for feature in data['features']:
+    magnitude = feature['properties']['mag']  # Get the magnitude
+    time = feature['properties']['time']      # Get the time (in milliseconds since epoch)
+    print(f"Magnitude: {magnitude}, Time: {time}")
+
