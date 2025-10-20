@@ -73,7 +73,73 @@ def load_local_data():
     return data
 
 # With all the above functions defined, we can now call them and get the result
-data = get_data()
+data = load_local_data()
 print(f"Loaded {count_earthquakes(data)}")
 max_magnitude, max_location = get_maximum(data)
 print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
+
+
+
+import matplotlib.pyplot as plt
+from datetime import datetime
+from collections import defaultdict
+
+# --- existing functions above here ---
+
+def get_year(earthquake):
+    """Extract the year from the earthquake timestamp."""
+    # USGS time is in milliseconds since epoch
+    timestamp = earthquake['properties']['time'] / 1000  # convert to seconds
+    dt = datetime.utcfromtimestamp(timestamp)
+    return dt.year
+
+def analyse_by_year(data):
+    """Aggregate number and magnitude of earthquakes by year."""
+    counts = defaultdict(int)
+    magnitudes_sum = defaultdict(float)
+
+    for quake in data['features']:
+        year = get_year(quake)
+        mag = get_magnitude(quake)
+        if mag is not None:  # just in case there are null magnitudes
+            counts[year] += 1
+            magnitudes_sum[year] += mag
+
+    # Sort years for plotting
+    years = sorted(counts.keys())
+    frequencies = [counts[y] for y in years]
+    avg_magnitudes = [magnitudes_sum[y] / counts[y] for y in years]
+
+    return years, frequencies, avg_magnitudes
+
+def plot_frequency(years, frequencies):
+    plt.figure(figsize=(10, 5))
+    plt.bar(years, frequencies, color='steelblue')
+    plt.title('Number of Earthquakes per Year')
+    plt.xlabel('Year')
+    plt.ylabel('Number of Earthquakes')
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+def plot_average_magnitude(years, avg_magnitudes):
+    plt.figure(figsize=(10, 5))
+    plt.plot(years, avg_magnitudes, marker='o', color='darkred')
+    plt.title('Average Earthquake Magnitude per Year')
+    plt.xlabel('Year')
+    plt.ylabel('Average Magnitude')
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+# --- run everything ---
+if __name__ == "__main__":
+    data = load_local_data()
+    print(f"Loaded {count_earthquakes(data)} earthquakes")
+
+    max_magnitude, max_location = get_maximum(data)
+    print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
+
+    years, frequencies, avg_magnitudes = analyse_by_year(data)
+    plot_frequency(years, frequencies)
+    plot_average_magnitude(years, avg_magnitudes)
