@@ -66,13 +66,14 @@ def get_maximum(data):
             current_max_location = get_location(item)
     return current_max_magnitude, current_max_location
 
+def load_local_data():
+    """Load earthquake data from the locally saved text.json file."""
+    with open('text.json', 'r') as f:
+        data = json.load(f)
+    return data
 
 # With all the above functions defined, we can now call them and get the result
 data = get_data()
-
-#print(f"Loaded {count_earthquakes(data)}")
-#max_magnitude, max_location = get_maximum(data)
-#print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
-
-
-print(data["properties"].keys())
+print(f"Loaded {count_earthquakes(data)}")
+max_magnitude, max_location = get_maximum(data)
+print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
