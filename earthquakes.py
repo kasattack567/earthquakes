@@ -5,8 +5,6 @@
 import json
 import requests
 
-print("hello world")
-
 def get_data():
     # With requests, we can ask the web service for the data.
     # Can you understand the parameters we are passing here?
@@ -71,6 +69,10 @@ def get_maximum(data):
 
 # With all the above functions defined, we can now call them and get the result
 data = get_data()
-print(f"Loaded {count_earthquakes(data)}")
-max_magnitude, max_location = get_maximum(data)
-print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
+
+#print(f"Loaded {count_earthquakes(data)}")
+#max_magnitude, max_location = get_maximum(data)
+#print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
+
+
+print(data["properties"].keys())
