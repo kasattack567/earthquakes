@@ -56,9 +56,15 @@ def get_location(earthquake):
 
 def get_maximum(data):
     """Get the magnitude and location of the strongest earthquake in the data."""
-    features = data["features"]
-    strongest = max(features, key=get_magnitude)
-    return get_magnitude(strongest), get_location(strongest)
+    current_max_magnitude = get_magnitude(data["features"][0])
+    current_max_location = get_location(data["features"][0])
+    for item in data["features"]:
+        magnitude = get_magnitude(item)
+        # Note: what happens if there are two earthquakes with the same magnitude?
+        if magnitude > current_max_magnitude:
+            current_max_magnitude = magnitude
+            current_max_location = get_location(item)
+    return current_max_magnitude, current_max_location
 
 
 # With all the above functions defined, we can now call them and get the result
