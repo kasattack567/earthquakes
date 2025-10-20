@@ -78,12 +78,72 @@ print(f"Loaded {count_earthquakes(data)}")
 max_magnitude, max_location = get_maximum(data)
 print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
 
+#Check the structure of the data and the following properties
 print(type(data))
 print(data.keys())
 
-# Extract and print magnitudes and times
-for feature in data['features']:
-    magnitude = feature['properties']['mag']  # Get the magnitude
-    time = feature['properties']['time']      # Get the time (in milliseconds since epoch)
-    print(f"Magnitude: {magnitude}, Time: {time}")
+import numpy as np
+import matplotlib.pyplot as plt
 
+# Initialize empty lists to store years and magnitudes
+years = []  # This will store the year of each earthquake
+magnitudes = []  # This will store the magnitude of each earthquake
+
+# Loop through each earthquake feature in the dataset
+for feature in data['features']:
+    magnitude = feature['properties']['mag']  # Extract the magnitude of the earthquake
+    time_ms = feature['properties']['time']   # Extract the time (in milliseconds since epoch)
+    
+    # Convert time from milliseconds to seconds
+    time_s = time_ms / 1000
+    
+    # Convert seconds since epoch to year
+    # Unix Epoch starts at 1970-01-01 00:00:00 UTC
+    # Divide by the number of seconds in a year (365.25 accounts for leap years)
+    year = int(1970 + (time_s / (60 * 60 * 24 * 365.25)))  # Convert to year
+    
+    # Append the year and magnitude to their respective lists
+    years.append(year)
+    magnitudes.append(magnitude)
+
+# Convert the lists to NumPy arrays for efficient numerical operations
+years = np.array(years)
+magnitudes = np.array(magnitudes)
+
+# Use numpy.unique to calculate the frequency of earthquakes and average magnitude per year
+# np.unique returns the unique years and the count of occurrences for each year
+unique_years, counts = np.unique(years, return_counts=True)
+
+# Calculate the average magnitude for each year
+# For each unique year, filter the magnitudes array to include only magnitudes for that year
+# Then calculate the mean of those magnitudes
+average_magnitudes = np.array([magnitudes[years == year].mean() for year in unique_years])
+
+# Print the results for each year
+# Loop through the unique years, their counts, and average magnitudes
+for year, count, avg_mag in zip(unique_years, counts, average_magnitudes):
+    print(f"Year: {year}, Earthquakes: {count}, Average Magnitude: {avg_mag:.2f}")
+
+# Plot the data
+fig, ax1 = plt.subplots()  # Create a figure and a set of subplots
+
+# Plot the frequency of earthquakes as a bar chart
+ax1.set_xlabel('Year')  # Label for the x-axis
+ax1.set_ylabel('Number of Earthquakes', color='tab:blue')  # Label for the left y-axis
+ax1.bar(unique_years, counts, color='tab:blue', alpha=0.6, label='Frequency')  # Bar chart for frequency
+ax1.tick_params(axis='y', labelcolor='tab:blue')  # Set the color of the left y-axis labels to blue
+
+# Create a second y-axis for the average magnitude
+ax2 = ax1.twinx()  # Create a twin y-axis sharing the same x-axis
+ax2.set_ylabel('Average Magnitude', color='tab:orange')  # Label for the right y-axis
+ax2.plot(unique_years, average_magnitudes, color='tab:orange', marker='o', label='Avg Magnitude')  # Line plot for average magnitude
+ax2.tick_params(axis='y', labelcolor='tab:orange')  # Set the color of the right y-axis labels to orange
+
+# Add a title to the plot
+plt.title('Earthquake Frequency and Average Magnitude per Year')
+
+# Adjust the layout to prevent overlapping labels
+fig.tight_layout()
+
+# Display the plot
+plt.show()
