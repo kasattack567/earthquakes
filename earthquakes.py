@@ -27,13 +27,7 @@ def get_data():
     # To understand the structure of this text, you may want to save it
     # to a file and open it in VS Code or a browser.
     # See the README file for more information.
-    with open('text.json', 'w') as f:
-        f.write(text)
-    
-    with open('text.json', 'r') as f:
-        data = json.load(f)
-
-        
+    data = response.json()
     # We need to interpret the text to get values that we can work with.
     # What format is the text in? How can we load the values?
     return data
@@ -134,7 +128,7 @@ def plot_average_magnitude(years, avg_magnitudes):
 
 # --- run everything ---
 if __name__ == "__main__":
-    data = load_local_data()
+    data = get_data()
     print(f"Loaded {count_earthquakes(data)} earthquakes")
 
     max_magnitude, max_location = get_maximum(data)
